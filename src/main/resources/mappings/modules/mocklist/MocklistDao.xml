@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.mocklist.dao.MocklistDao">
+    
+	<sql id="mocklistColumns">
+		a.id AS "id",
+		a.business AS "business",
+		a.api_name AS "apiName",
+		a.request_type AS "requestType",
+		a.request_params AS "requestParams",
+		a.request_path AS "requestPath",
+		a.return__code AS "returnCode",
+		a.return_type AS "returnType",
+		a.response AS "response",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="mocklistJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="Mocklist" >
+		SELECT 
+			<include refid="mocklistColumns"/>
+		FROM mocklist a
+		<include refid="mocklistJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Mocklist" >
+		SELECT 
+			<include refid="mocklistColumns"/>
+		FROM mocklist a
+		<include refid="mocklistJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="business != null and business != ''">
+				AND a.business LIKE 
+					<if test="dbName == 'oracle'">'%'||#{business}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{business}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{business},'%')</if>
+			</if>
+			<if test="apiName != null and apiName != ''">
+				AND a.api_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{apiName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{apiName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{apiName},'%')</if>
+			</if>
+			<if test="requestParams != null and requestParams != ''">
+				AND a.request_params LIKE 
+					<if test="dbName == 'oracle'">'%'||#{requestParams}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{requestParams}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{requestParams},'%')</if>
+			</if>
+			<if test="returnCode != null and returnCode != ''">
+				AND a.return__code = #{returnCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Mocklist" >
+		SELECT 
+			<include refid="mocklistColumns"/>
+		FROM mocklist a
+		<include refid="mocklistJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO mocklist(
+			id,
+			business,
+			api_name,
+			request_type,
+			request_params,
+			request_path,
+			return__code,
+			return_type,
+			response,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{business},
+			#{apiName},
+			#{requestType},
+			#{requestParams},
+			#{requestPath},
+			#{returnCode},
+			#{returnType},
+			#{response},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE mocklist SET 	
+			business = #{business},
+			api_name = #{apiName},
+			request_type = #{requestType},
+			request_params = #{requestParams},
+			request_path = #{requestPath},
+			return__code = #{returnCode},
+			return_type = #{returnType},
+			response = #{response},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM mocklist
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE mocklist SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Mocklist" statementType="STATEMENT">
+		select * FROM mocklist  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

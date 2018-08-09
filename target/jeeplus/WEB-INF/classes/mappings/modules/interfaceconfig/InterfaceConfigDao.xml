@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.interfaceconfig.dao.InterfaceConfigDao">
+    
+	<sql id="interfaceConfigColumns">
+		a.id AS "id",
+		a.business_name AS "businessName",
+		a.project_name AS "projectName",
+		a.interface_name AS "interfaceName",
+		a.interface_version AS "interfaceVersion",
+		a.manager AS "manager",
+		a.server_mock AS "serverMock",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="interfaceConfigJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="InterfaceConfig" >
+		SELECT 
+			<include refid="interfaceConfigColumns"/>
+		FROM interface_config a
+		<include refid="interfaceConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="InterfaceConfig" >
+		SELECT 
+			<include refid="interfaceConfigColumns"/>
+		FROM interface_config a
+		<include refid="interfaceConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="interfaceName != null and interfaceName != ''">
+				AND a.interface_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{interfaceName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{interfaceName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{interfaceName},'%')</if>
+			</if>
+			<if test="manager != null and manager != ''">
+				AND a.manager = #{manager}
+			</if>
+			<if test="serverMock != null and serverMock != ''">
+				AND a.server_mock LIKE 
+					<if test="dbName == 'oracle'">'%'||#{serverMock}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{serverMock}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{serverMock},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="InterfaceConfig" >
+		SELECT 
+			<include refid="interfaceConfigColumns"/>
+		FROM interface_config a
+		<include refid="interfaceConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO interface_config(
+			id,
+			business_name,
+			project_name,
+			interface_name,
+			interface_version,
+			manager,
+			server_mock,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{businessName},
+			#{projectName},
+			#{interfaceName},
+			#{interfaceVersion},
+			#{manager},
+			#{serverMock},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE interface_config SET 	
+			business_name = #{businessName},
+			project_name = #{projectName},
+			interface_name = #{interfaceName},
+			interface_version = #{interfaceVersion},
+			manager = #{manager},
+			server_mock = #{serverMock},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM interface_config
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE interface_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="InterfaceConfig" statementType="STATEMENT">
+		select * FROM interface_config  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.caseconfig.dao.CaseConfigDao">
+    
+	<sql id="caseConfigColumns">
+		a.id AS "id",
+		a.interface_name AS "interfaceName",
+		a.case_name AS "caseName",
+		a.is_wrong AS "isWrong",
+		a.http_method AS "httpMethod",
+		a.url_address AS "urlAddress",
+		a.paramter AS "paramter",
+		a.return_type AS "returnType",
+		a.status_code AS "statusCode",
+		a.response_body AS "responseBody",
+		a.is_delay AS "isDelay",
+		a.delay_time AS "delayTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="caseConfigJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="CaseConfig" >
+		SELECT 
+			<include refid="caseConfigColumns"/>
+		FROM case_config a
+		<include refid="caseConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CaseConfig" >
+		SELECT 
+			<include refid="caseConfigColumns"/>
+		FROM case_config a
+		<include refid="caseConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="interfaceName != null and interfaceName != ''">
+				AND a.interface_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{interfaceName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{interfaceName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{interfaceName},'%')</if>
+			</if>
+			<if test="caseName != null and caseName != ''">
+				AND a.case_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{caseName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{caseName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{caseName},'%')</if>
+			</if>
+			<if test="urlAddress != null and urlAddress != ''">
+				AND a.url_address LIKE 
+					<if test="dbName == 'oracle'">'%'||#{urlAddress}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{urlAddress}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{urlAddress},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CaseConfig" >
+		SELECT 
+			<include refid="caseConfigColumns"/>
+		FROM case_config a
+		<include refid="caseConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO case_config(
+			id,
+			interface_name,
+			case_name,
+			is_wrong,
+			http_method,
+			url_address,
+			paramter,
+			return_type,
+			status_code,
+			response_body,
+			is_delay,
+			delay_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{interfaceName},
+			#{caseName},
+			#{isWrong},
+			#{httpMethod},
+			#{urlAddress},
+			#{paramter},
+			#{returnType},
+			#{statusCode},
+			#{responseBody},
+			#{isDelay},
+			#{delayTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE case_config SET 	
+			interface_name = #{interfaceName},
+			case_name = #{caseName},
+			is_wrong = #{isWrong},
+			http_method = #{httpMethod},
+			url_address = #{urlAddress},
+			paramter = #{paramter},
+			return_type = #{returnType},
+			status_code = #{statusCode},
+			response_body = #{responseBody},
+			is_delay = #{isDelay},
+			delay_time = #{delayTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM case_config
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE case_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="CaseConfig" statementType="STATEMENT">
+		select * FROM case_config  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>
