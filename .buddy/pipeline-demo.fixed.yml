@@ -12,6 +12,13 @@
     trigger_variable_key: "BUDDY_EXECUTION_BRANCH"
   cpu: "ARM"
   actions:
+  - action: "echo '11111'"
+    type: "BUILD"
+    docker_image_name: "library/ubuntu"
+    docker_image_tag: "20.04"
+    execute_commands:
+    - "echo '11111'"
+    shell: "BASH"
   - action: "mvn clean compile"
     type: "BUILD"
     docker_image_name: "library/maven"
@@ -29,13 +36,6 @@
     docker_image_tag: "20.04"
     execute_commands:
     - "echo '2222'"
-    shell: "BASH"
-  - action: "echo '11111'"
-    type: "BUILD"
-    docker_image_name: "library/ubuntu"
-    docker_image_tag: "20.04"
-    execute_commands:
-    - "echo '11111'"
     shell: "BASH"
   - action: "echo '333'"
     type: "BUILD"
