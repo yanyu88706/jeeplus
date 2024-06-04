@@ -26,6 +26,7 @@
     execute_commands:
     - "echo '2222'"
     shell: "BASH"
+    run_next: "IN_SOFT_PARALLEL"
   - action: "mvn clean compile"
     type: "BUILD"
     docker_image_name: "library/maven"
