@@ -28,7 +28,6 @@
     cached_dirs:
     - "/root/.m2/repository"
     shell: "BASH"
-    run_next: "IN_SOFT_PARALLEL"
     execute_every_command: true
   - action: "echo '2222'"
     type: "BUILD"
