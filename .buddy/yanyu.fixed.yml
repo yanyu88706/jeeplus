@@ -2,7 +2,10 @@
   on: "CLICK"
   refs:
   - "refs/heads/master"
-  fail_on_prepare_env_warning: true
+  execution_message_template: "$BUDDY_EXECUTION_BRANCH - $BUDDY_EXECUTION_ID"
+  fetch_all_refs: true
+  concurrent_pipeline_runs: true
+  clone_depth: 1
   cpu: "ARM"
   actions:
   - action: "mvn clean compile"
